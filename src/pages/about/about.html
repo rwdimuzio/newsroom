@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Sources
+      <ion-badge>{{getSelectedSources()?.length}}</ion-badge>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-item *ngIf="loading" no-lines>
+    <ion-spinner></ion-spinner>
+  </ion-item>
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+  </ion-refresher>
+  <ion-list>
+    <ion-item *ngFor="let article of sources" (click)="toggleSource(article)" [ngClass]="isSelected(article) ? 'selected' : 'not-selected'">
+      <img *ngIf="article.urlToImage" src="{{article.urlToImage}}" />
+      <h1>{{article.name}}</h1>
+      {{article.description}}
+    </ion-item>
+  </ion-list>
+</ion-content>

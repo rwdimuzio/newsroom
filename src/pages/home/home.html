@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Top Stories</ion-title>
+    <ion-buttons end><button ion-button (click)="doRefresh(null)"><ion-icon name='refresh'></ion-icon></button></ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-item *ngIf="loading" no-lines>
+    <ion-spinner></ion-spinner>
+  </ion-item>
+  <ion-item *ngIf="noSources" no-lines>
+    No Sources Selected
+  </ion-item>
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+  </ion-refresher>
+  <ion-list>
+    <ion-card *ngFor="let article of articles" (click)="open(article.url)">
+        <h3>{{article.source.name}}</h3>
+        <h1>{{article.title}}</h1>
+      <img *ngIf="article.urlToImage" src="{{article.urlToImage}}" />
+      <ion-item>
+        {{article.content}}
+      </ion-item>
+    </ion-card>
+  </ion-list>
+</ion-content>
