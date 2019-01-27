@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.steelmarble.simplythenewsr" version="0.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Simply the News</name>
-    <description></description>
+    <description />
     <author email="simpllythenews@steelmarble.com" href="http:://steelmarble.com">Rich DiMuzio</author>
     <content src="index.html" />
     <access origin="*" />
