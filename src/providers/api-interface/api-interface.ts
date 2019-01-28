@@ -4,6 +4,8 @@ import { Observable, } from 'rxjs/Observable';
 import { InAppBrowserOptions } from '@ionic-native/in-app-browser';
 import { SettingsProvider } from '../settings/settings'
 import 'rxjs/add/observable/fromPromise';
+import { CacheService } from "ionic-cache";
+
 
 /*
   Generated class for the ApiInterfaceProvider provider.
@@ -26,6 +28,7 @@ https://newsapi.org/v2/sources?apiKey=891936083b324696939b66d8afa0b3fc
 */
 @Injectable()
 export class ApiInterfaceProvider {
+
   // A global place to tell all the programs how to open external pages
   public browserOptions: InAppBrowserOptions = {
     location: 'yes',//Or 'no' 
@@ -48,9 +51,11 @@ export class ApiInterfaceProvider {
   sources = [];
 
 
+  GROUP_KEY = 'simply-the-news-group';
+  ttl = 60 * 15; // 15 miuntes  to live
   apiUrl: String = "https://newsapi.org";
   apiKey: String = "891936083b324696939b66d8afa0b3fc";
-  constructor(public http: HttpClient, private settingsProvider: SettingsProvider) {
+  constructor(public http: HttpClient, private settingsProvider: SettingsProvider, private cache: CacheService) {
     console.log('Hello ApiInterfaceProvider Provider');
     settingsProvider.getValue("sources").then(res => {
       console.log(res);
@@ -58,14 +63,14 @@ export class ApiInterfaceProvider {
     }).catch(err => { });
   }
 
-  public XgetUsHeadlines(): Observable<any> {
+  public getTopHeadlines(): Observable<any> {
     return this.http.get(this.apiUrl + '/v2/top-headlines?country=us&pageSize=100&apiKey=' + this.apiKey);
   }
   public getHeadlinesByGroup(groupId) {
     return this.http.get(this.apiUrl + '/v2/top-headlines?category=' + groupId + '&language=us&sortBy=publishedAt&pageSize=100&apiKey=' + this.apiKey);
   }
 
-  public getUsHeadlines(): Observable<any> {
+  public getHeadlines(): Observable<any> {
     var sourceCat = "";
     this.sources.forEach(element => {
       if (sourceCat != "")
@@ -74,13 +79,14 @@ export class ApiInterfaceProvider {
     });
     console.log(sourceCat);
     var url = this.apiUrl + '/v2/everything?sources=' + sourceCat + '&language=en&pageSize=100&apiKey=' + this.apiKey;
-    console.log(url);
-    return this.http.get(url);
+    //console.log(url);
+    //return this.http.get(url);
+    return this.cache.loadFromObservable(url, this.http.get(url), this.GROUP_KEY, this.ttl)
   }
 
   public getSources(): Observable<any> {
-
-    return this.http.get(this.apiUrl + '/v2/sources?apiKey=' + this.apiKey);
+    var url = this.apiUrl + '/v2/sources?apiKey=' + this.apiKey;
+    return this.cache.loadFromObservable(url, this.http.get(url), this.GROUP_KEY, this.ttl)
   }
 
   public getSelectedSources(): any[] {
